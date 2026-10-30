@@ -48,10 +48,10 @@
 
     <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
 
-      <!-- SECCIÓN EXCLUSIVA ADMINISTRADOR: MÉTRICAS Y GESTIÓN DE USUARIOS -->
+      <!-- SECCIÓN EXCLUSIVA ADMINISTRADOR -->
       <div id="admin-panel" class="hidden space-y-6">
         
-        <!-- Tarjetas de Comportamiento Global/Asesor -->
+        <!-- Tarjetas de Comportamiento -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500">
             <p class="text-xs text-gray-500 font-bold uppercase">Total Cobrado</p>
@@ -71,11 +71,10 @@
           </div>
         </div>
 
-        <!-- Gestión de Perfiles y Claves -->
+        <!-- Gestión de Perfiles -->
         <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
           <h2 class="text-lg font-bold text-gray-700">Gestión de Perfiles y Claves de Asesores</h2>
           
-          <!-- Formulario Crear / Editar Usuario -->
           <form id="user-management-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg border">
             <input type="hidden" id="manage-user-id" />
             <div>
@@ -103,7 +102,6 @@
             </div>
           </form>
 
-          <!-- Tabla de Usuarios y Comportamiento Individual -->
           <div class="overflow-x-auto">
             <table class="w-full text-sm text-left text-gray-600">
               <thead class="text-xs text-gray-700 uppercase bg-gray-100">
@@ -117,7 +115,7 @@
                 </tr>
               </thead>
               <tbody id="users-tbody">
-                <!-- Se puebla dinámicamente -->
+                <!-- Dinámico -->
               </tbody>
             </table>
           </div>
@@ -173,7 +171,6 @@
       <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h2 class="text-lg font-bold text-gray-700">Listado de Pagos</h2>
-          
           <div class="flex gap-2">
             <button id="export-excel-btn" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center gap-2">
               📊 Descargar Consolidado en Excel
@@ -197,7 +194,7 @@
               </tr>
             </thead>
             <tbody id="payments-tbody">
-              <!-- Datos de Firestore -->
+              <!-- Dinámico -->
             </tbody>
           </table>
         </div>
@@ -216,6 +213,7 @@
       deleteDoc, 
       doc, 
       setDoc,
+      getDocs,
       query, 
       where 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -232,7 +230,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Lista por defecto inicial (si Firestore estuviese vacío)
+    // Los 13 asesores oficiales y el Administrador exactos
     const defaultUsers = [
       { name: "Administrador Global", role: "admin", pass: "admin123" },
       { name: "Kismar Hernandez", role: "asesor", pass: "123456" },
@@ -254,7 +252,7 @@
     let allRecords = [];
     let allUsers = [];
 
-    // Llenar las 12 Cuotas
+    // Llenar Cuotas
     const statusSelect = document.getElementById("pago-status");
     for (let i = 1; i <= 12; i++) {
       const opt = document.createElement("option");
@@ -267,24 +265,27 @@
       statusSelect.appendChild(opt);
     }
 
-    // Escuchar Usuarios en tiempo real desde Firestore
-    onSnapshot(collection(db, "usuarios"), (snapshot) => {
-      allUsers = [];
-      snapshot.forEach(docItem => {
-        allUsers.push({ id: docItem.id, ...docItem.data() });
-      });
-
-      // Si no hay usuarios en Firestore, sembrar los predeterminados
-      if (allUsers.length === 0) {
-        defaultUsers.forEach(async (u) => {
+    // Inicializar y verificar usuarios sin duplicar
+    async function inicializarUsuariosUnicos() {
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
+      if (querySnapshot.empty) {
+        for (const u of defaultUsers) {
           await addDoc(collection(db, "usuarios"), u);
+        }
+      }
+    }
+
+    inicializarUsuariosUnicos().then(() => {
+      onSnapshot(collection(db, "usuarios"), (snapshot) => {
+        allUsers = [];
+        snapshot.forEach(docItem => {
+          allUsers.push({ id: docItem.id, ...docItem.data() });
         });
-      } else {
         actualizarSelectUsuarios();
         if (currentUser && currentUser.role === 'admin') {
           renderUsuariosTable();
         }
-      }
+      });
     });
 
     function actualizarSelectUsuarios() {
@@ -298,14 +299,12 @@
       });
     }
 
-    // Login Handler
     document.getElementById("login-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const userName = document.getElementById("login-user").value;
       const pass = document.getElementById("login-password").value;
 
       const userMatch = allUsers.find(u => u.name === userName && u.pass === pass);
-
       if (userMatch) {
         currentUser = userMatch;
         initDashboard();
@@ -334,7 +333,6 @@
       escucharPagos();
     }
 
-    // Escuchar Pagos en tiempo real
     function escucharPagos() {
       const pagosRef = collection(db, "pagos");
       let q = pagosRef;
@@ -391,7 +389,6 @@
       });
     }
 
-    // Actualizar KPIs de Comportamiento Global
     function actualizarMetricasAdmin() {
       const totalMonto = allRecords.reduce((sum, r) => sum + (parseFloat(r.monto) || 0), 0);
       const totalSi = allRecords.filter(r => r.pagoConfirmado === 'Sí').length;
@@ -404,7 +401,6 @@
       document.getElementById("kpi-total-asesores").textContent = asesoresActivos;
     }
 
-    // Renderizar Tabla de Usuarios con Estadísticas Individuales
     function renderUsuariosTable() {
       const tbody = document.getElementById("users-tbody");
       if (!tbody) return;
@@ -431,7 +427,6 @@
         tbody.appendChild(tr);
       });
 
-      // Editar Usuario
       document.querySelectorAll(".btn-edit-user").forEach(btn => {
         btn.addEventListener("click", (e) => {
           const id = e.target.getAttribute("data-id");
@@ -447,7 +442,6 @@
         });
       });
 
-      // Eliminar Usuario
       document.querySelectorAll(".btn-delete-user").forEach(btn => {
         btn.addEventListener("click", async (e) => {
           const id = e.target.getAttribute("data-id");
@@ -458,7 +452,6 @@
       });
     }
 
-    // Guardar / Actualizar Usuario
     document.getElementById("user-management-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const userId = document.getElementById("manage-user-id").value;
@@ -467,10 +460,8 @@
       const role = document.getElementById("manage-user-role").value;
 
       if (userId) {
-        // Modificar
         await setDoc(doc(db, "usuarios", userId), { name, pass, role }, { merge: true });
       } else {
-        // Crear
         await addDoc(collection(db, "usuarios"), { name, pass, role });
       }
 
@@ -486,7 +477,6 @@
       document.getElementById("btn-cancel-user").classList.add("hidden");
     }
 
-    // Registrar Pago
     document.getElementById("payment-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -510,7 +500,6 @@
       }
     });
 
-    // Exportar a Excel
     document.getElementById("export-excel-btn").addEventListener("click", () => {
       if (allRecords.length === 0) {
         alert("No hay registros para exportar.");
