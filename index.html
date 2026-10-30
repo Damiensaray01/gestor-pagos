@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestor de Pagos de Asesores</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SheetJS para exportar a Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="login-screen" class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-width max-w-md">
+      <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">Gestor de Pagos</h2>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Usuario / Asesor</label>
+          <select id="login-user" class="mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+            <option value="">-- Selecciona un usuario --</option>
+            <option value="admin">Administrador Global</option>
+            <option value="Kismar Hernandez">Kismar Hernandez</option>
+            <option value="Kariosqui Gomez">Kariosqui Gomez</option>
+            <option value="Luisiana Nacero">Luisiana Nacero</option>
+            <option value="Cindy Suarez">Cindy Suarez</option>
+            <option value="Carolina Rojas">Carolina Rojas</option>
+            <option value="Danielis Villegas">Danielis Villegas</option>
+            <option value="Berenice Troconiz">Berenice Troconiz</option>
+            <option value="Roikel Suniaga">Roikel Suniaga</option>
+            <option value="Asesor 9">Asesor 9</option>
+            <option value="Asesor 10">Asesor 10</option>
+            <option value="Asesor 11">Asesor 11</option>
+            <option value="Asesor 12">Asesor 12</option>
+            <option value="Asesor 13">Asesor 13</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+          <input type="password" id="login-password" placeholder="Para prueba usa: 123456" class="mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+        </div>
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition duration-200">
+          Iniciar Sesión
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PANEL PRINCIPAL (DASHBOARD) -->
+  <div id="app-screen" class="hidden min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
+      <div>
+        <h1 class="text-xl font-bold">Gestor de Pagos</h1>
+        <p id="user-display-role" class="text-xs text-blue-200"></p>
+      </div>
+      <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-sm font-medium transition">
+        Cerrar Sesión
+      </button>
+    </header>
+
+    <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+      
+      <!-- FORMULARIO DE REGISTRO (Disponible para Asesores y Admin) -->
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-lg font-bold text-gray-700 mb-4" id="form-title">Registrar Nuevo Pago</h2>
+        <form id="payment-form" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600">Fecha de Pago</label>
+            <input type="date" id="pago-fecha" class="w-full p-2 border rounded mt-1 text-sm" required />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600">Nombre y Apellido Cliente</label>
+            <input type="text" id="pago-cliente" placeholder="Juan Pérez" class="w-full p-2 border rounded mt-1 text-sm" required />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600">Cédula de Identidad</label>
+            <input type="text" id="pago-cedula" placeholder="V-12345678" class="w-full p-2 border rounded mt-1 text-sm" required />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600">Número Telefónico</label>
+            <input type="tel" id="pago-telefono" placeholder="0414-0000000" class="w-full p-2 border rounded mt-1 text-sm" required />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600">¿Pagó?</label>
+            <select id="pago-confirmado" class="w-full p-2 border rounded mt-1 text-sm" required>
+              <option value="Sí">Sí</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600">Monto ($USD)</label>
+            <input type="number" step="0.01" id="pago-monto" placeholder="0.00" class="w-full p-2 border rounded mt-1 text-sm" required />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600">Estatus (Cuota)</label>
+            <select id="pago-status" class="w-full p-2 border rounded mt-1 text-sm" required>
+              <!-- Opciones del 1 al 12 -->
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold p-2 rounded text-sm transition">
+              Guardar Pago
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- TABLA Y CONSOLIDADOS -->
+      <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h2 class="text-lg font-bold text-gray-700" id="table-title">Listado de Pagos</h2>
+          
+          <!-- Botón exclusivo Administrador: Exportar a Excel -->
+          <div class="flex gap-2">
+            <button id="export-excel-btn" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center gap-2">
+              📊 Descargar Consolidado en Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabla Responsiva -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-600">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+              <tr>
+                <th class="py-3 px-4">Fecha</th>
+                <th class="py-3 px-4">Asesor</th>
+                <th class="py-3 px-4">Cliente</th>
+                <th class="py-3 px-4">Cédula</th>
+                <th class="py-3 px-4">Teléfono</th>
+                <th class="py-3 px-4">¿Pagó?</th>
+                <th class="py-3 px-4">Monto ($)</th>
+                <th class="py-3 px-4">Estatus</th>
+                <th class="py-3 px-4">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="payments-tbody">
+              <!-- Datos dinámicos -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- FIREBASE SDKs v10 (CDN ES Modules) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      onSnapshot, 
+      deleteDoc, 
+      doc, 
+      query, 
+      where 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 1. Configuración de tu proyecto en Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbfspPoLybzifWRNdo-Uee2eonakRdTsg",
+      authDomain: "gestor-pagos-d5c91.firebaseapp.com",
+      projectId: "gestor-pagos-d5c91",
+      storageBucket: "gestor-pagos-d5c91.firebasestorage.app",
+      messagingSenderId: "948689372988",
+      appId: "1:948689372988:web:d05c643dd5acbb55d54039"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Estado global de sesión
+    let currentUser = null;
+    let allRecords = [];
+
+    // Poblar las 12 cuotas
+    const statusSelect = document.getElementById("pago-status");
+    for (let i = 1; i <= 12; i++) {
+      const opt = document.createElement("option");
+      opt.value = `${i}era CUOTA`;
+      if(i === 2) opt.value = `2da CUOTA`;
+      if(i === 3) opt.value = `3era CUOTA`;
+      if(i >= 4) opt.value = `${i}ta CUOTA`;
+      opt.textContent = opt.value;
+      statusSelect.appendChild(opt);
+    }
+
+    // Manejador de Login
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const user = document.getElementById("login-user").value;
+      const pass = document.getElementById("login-password").value;
+
+      // Validación simple para demostración (puedes ajustar contraseñas)
+      if (pass !== "") {
+        currentUser = {
+          name: user,
+          isAdmin: user === "admin"
+        };
+        initDashboard();
+      }
+    });
+
+    // Cerrar sesión
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      location.reload();
+    });
+
+    function initDashboard() {
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("app-screen").classList.remove("hidden");
+      
+      const roleText = currentUser.isAdmin 
+        ? "Rol: Administrador (Vista Global)" 
+        : `Rol: Asesor (${currentUser.name})`;
+      document.getElementById("user-display-role").textContent = roleText;
+
+      if (currentUser.isAdmin) {
+        document.getElementById("export-excel-btn").classList.remove("hidden");
+      }
+
+      escucharPagos();
+    }
+
+    // Escuchar datos en tiempo real desde Firestore
+    function escucharPagos() {
+      const pagosRef = collection(db, "pagos");
+      let q = pagosRef;
+
+      // Si es un asesor normal, filtrar solo sus registros
+      if (!currentUser.isAdmin) {
+        q = query(pagosRef, where("asesor", "==", currentUser.name));
+      }
+
+      onSnapshot(q, (snapshot) => {
+        allRecords = [];
+        const tbody = document.getElementById("payments-tbody");
+        tbody.innerHTML = "";
+
+        snapshot.forEach((docItem) => {
+          const data = docItem.data();
+          data.id = docItem.id;
+          allRecords.push(data);
+
+          const tr = document.createElement("tr");
+          tr.className = "border-b hover:bg-gray-50";
+          tr.innerHTML = `
+            <td class="py-3 px-4">${data.fecha || ''}</td>
+            <td class="py-3 px-4 font-semibold">${data.asesor || ''}</td>
+            <td class="py-3 px-4">${data.cliente || ''}</td>
+            <td class="py-3 px-4">${data.cedula || ''}</td>
+            <td class="py-3 px-4">${data.telefono || ''}</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-1 text-xs rounded-full ${data.pagoConfirmado === 'Sí' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                ${data.pagoConfirmado}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-bold">$${parseFloat(data.monto || 0).toFixed(2)}</td>
+            <td class="py-3 px-4">${data.status || ''}</td>
+            <td class="py-3 px-4">
+              <button data-id="${data.id}" class="btn-delete text-red-600 hover:text-red-800 text-xs font-bold">Eliminar</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        // Eventos para eliminar
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.getAttribute("data-id");
+            if (confirm("¿Estás seguro de eliminar este registro?")) {
+              await deleteDoc(doc(db, "pagos", id));
+            }
+          });
+        });
+      });
+    }
+
+    // Registrar Pago
+    document.getElementById("payment-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const nuevoPago = {
+        fecha: document.getElementById("pago-fecha").value,
+        cliente: document.getElementById("pago-cliente").value,
+        cedula: document.getElementById("pago-cedula").value,
+        telefono: document.getElementById("pago-telefono").value,
+        pagoConfirmado: document.getElementById("pago-confirmado").value,
+        monto: parseFloat(document.getElementById("pago-monto").value),
+        status: document.getElementById("pago-status").value,
+        asesor: currentUser.isAdmin ? "Administrador" : currentUser.name,
+        timestamp: new Date()
+      };
+
+      try {
+        await addDoc(collection(db, "pagos"), nuevoPago);
+        document.getElementById("payment-form").reset();
+      } catch (err) {
+        alert("Error al guardar: " + err.message);
+      }
+    });
+
+    // Exportar a Excel (SheetJS)
+    document.getElementById("export-excel-btn").addEventListener("click", () => {
+      if (allRecords.length === 0) {
+        alert("No hay registros para exportar.");
+        return;
+      }
+
+      const dataToExport = allRecords.map(r => ({
+        "Fecha de Pago": r.fecha,
+        "Asesor": r.asesor,
+        "Nombre Cliente": r.cliente,
+        "Cédula": r.cedula,
+        "Teléfono": r.telefono,
+        "¿Pagó?": r.pagoConfirmado,
+        "Monto ($USD)": r.monto,
+        "Estatus Cuota": r.status
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Consolidado_Pagos");
+
+      XLSX.writeFile(workbook, `Consolidado_Pagos_${new Date().toISOString().slice(0,10)}.xlsx`);
+    });
+  </script>
+</body>
+</html>
