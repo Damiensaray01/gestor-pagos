@@ -9,31 +9,36 @@
   <!-- SheetJS para exportar a Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* Fondo personalizado para Login con logo4 */
+    /* Fondo Login con capa oscura semitransparente muy clara (rgba de negro con opacidad baja) y logo4 */
     #login-screen {
-      background: linear-gradient(rgba(253, 246, 227, 0.9), rgba(254, 243, 199, 0.9)), url('logo4.png');
+      background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('logo4.png');
       background-size: cover;
       background-position: center;
     }
-    /* Fondo personalizado para el Dashboard con logo5 */
+    /* Fondo Dashboard con capa oscura semitransparente muy clara y logo5 */
     #app-screen {
-      background: linear-gradient(rgba(255, 251, 235, 0.95), rgba(254, 243, 199, 0.95)), url('logo5.png');
+      background: linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.35)), url('logo5.png');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
   </style>
 </head>
-<body class="bg-amber-50 min-h-screen text-stone-800 font-sans">
+<body class="bg-stone-900 min-h-screen text-stone-800 font-sans">
 
   <!-- PANTALLA DE LOGIN -->
   <div id="login-screen" class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md border border-amber-200">
-      <div class="text-center mb-6">
-        <h2 class="text-2xl font-extrabold text-amber-800">Sistema Corporativo</h2>
-        <p class="text-xs text-stone-500 mt-1">Gestión de Pagos y Asesores</p>
+    <div class="bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md border border-amber-200 text-center">
+      
+      <!-- LOGO 2 ARRIBA DEL TÍTULO -->
+      <div class="flex justify-center mb-4">
+        <img src="logo2.png" alt="Logo Corporativo" class="h-16 w-auto object-contain drop-shadow" onerror="this.style.display='none'" />
       </div>
-      <form id="login-form" class="space-y-4">
+
+      <h2 class="text-2xl font-extrabold text-amber-900">Gestión de pagos de asesores y administrativo</h2>
+      <p class="text-xs text-stone-500 mt-1 mb-6">Sistema Corporativo Seguro</p>
+
+      <form id="login-form" class="space-y-4 text-left">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Usuario / Asesor</label>
           <select id="login-user" class="w-full p-3 border border-amber-300 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none bg-amber-50/50 text-sm" required>
@@ -54,9 +59,9 @@
   <!-- PANEL PRINCIPAL (DASHBOARD) -->
   <div id="app-screen" class="hidden min-h-screen flex flex-col">
     <!-- Navbar Corporativo -->
-    <header class="bg-amber-700 text-amber-50 p-4 shadow-md flex justify-between items-center border-b border-amber-800">
+    <header class="bg-amber-900/90 backdrop-blur text-amber-50 p-4 shadow-md flex justify-between items-center border-b border-amber-800">
       <div>
-        <h1 class="text-lg font-bold tracking-wide">Gestor de Pagos Corporativo</h1>
+        <h1 class="text-lg font-bold tracking-wide">Gestión de Pagos - Panel Corporativo</h1>
         <p id="user-display-role" class="text-xs text-amber-200 font-medium"></p>
       </div>
       <button id="logout-btn" class="bg-stone-800 hover:bg-stone-900 text-amber-100 px-4 py-2 rounded-lg text-xs font-bold transition shadow">
@@ -71,19 +76,19 @@
         
         <!-- Tarjetas de Comportamiento / KPIs -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-600">
+          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-600">
             <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Total Cobrado</p>
             <p id="kpi-total-monto" class="text-2xl font-extrabold text-stone-800 mt-1">$0.00</p>
           </div>
-          <div class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-emerald-600">
+          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-emerald-600">
             <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Pagos Confirmados (Sí)</p>
             <p id="kpi-total-si" class="text-2xl font-extrabold text-emerald-700 mt-1">0</p>
           </div>
-          <div class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-rose-600">
+          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-rose-600">
             <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Pagos Pendientes (No)</p>
             <p id="kpi-total-no" class="text-2xl font-extrabold text-rose-700 mt-1">0</p>
           </div>
-          <div class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-800">
+          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-800">
             <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Asesores Activos</p>
             <p id="kpi-total-asesores" class="text-2xl font-extrabold text-amber-900 mt-1">0</p>
           </div>
@@ -122,7 +127,7 @@
 
           <div class="overflow-x-auto">
             <table class="w-full text-sm text-left text-stone-700">
-              <thead class="text-xs uppercase bg-amber-100/80 text-amber-900 font-bold">
+              <thead class="text-xs uppercase bg-amber-100/90 text-amber-900 font-bold">
                 <tr>
                   <th class="py-3 px-4">Nombre</th>
                   <th class="py-3 px-4">Rol</th>
@@ -132,7 +137,7 @@
                   <th class="py-3 px-4">Acciones</th>
                 </tr>
               </thead>
-              <tbody id="users-tbody" class="divide-y divide-amber-100">
+              <tbody id="users-tbody" class="divide-y divide-amber-100 bg-white/80">
                 <!-- Dinámico -->
               </tbody>
             </table>
@@ -198,7 +203,7 @@
 
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left text-stone-700">
-            <thead class="text-xs uppercase bg-amber-100/80 text-amber-900 font-bold">
+            <thead class="text-xs uppercase bg-amber-100/90 text-amber-900 font-bold">
               <tr>
                 <th class="py-3 px-4">Fecha</th>
                 <th class="py-3 px-4">Asesor</th>
@@ -211,7 +216,7 @@
                 <th class="py-3 px-4">Acción</th>
               </tr>
             </thead>
-            <tbody id="payments-tbody" class="divide-y divide-amber-100">
+            <tbody id="payments-tbody" class="divide-y divide-amber-100 bg-white/80">
               <!-- Dinámico -->
             </tbody>
           </table>
