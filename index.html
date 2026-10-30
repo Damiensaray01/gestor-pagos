@@ -9,13 +9,11 @@
   <!-- SheetJS para exportar a Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* Fondo Login con capa oscura semitransparente muy clara (rgba de negro con opacidad baja) y logo4 */
     #login-screen {
       background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('logo4.png');
       background-size: cover;
       background-position: center;
     }
-    /* Fondo Dashboard con capa oscura semitransparente muy clara y logo5 */
     #app-screen {
       background: linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.35)), url('logo5.png');
       background-size: cover;
@@ -29,12 +27,9 @@
   <!-- PANTALLA DE LOGIN -->
   <div id="login-screen" class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md border border-amber-200 text-center">
-      
-      <!-- LOGO 2 ARRIBA DEL TÍTULO -->
       <div class="flex justify-center mb-4">
         <img src="logo2.png" alt="Logo Corporativo" class="h-16 w-auto object-contain drop-shadow" onerror="this.style.display='none'" />
       </div>
-
       <h2 class="text-2xl font-extrabold text-amber-900">Gestión de pagos de asesores y administrativo</h2>
       <p class="text-xs text-stone-500 mt-1 mb-6">Sistema Corporativo Seguro</p>
 
@@ -58,7 +53,6 @@
 
   <!-- PANEL PRINCIPAL (DASHBOARD) -->
   <div id="app-screen" class="hidden min-h-screen flex flex-col">
-    <!-- Navbar Corporativo -->
     <header class="bg-amber-900/90 backdrop-blur text-amber-50 p-4 shadow-md flex justify-between items-center border-b border-amber-800">
       <div>
         <h1 class="text-lg font-bold tracking-wide">Gestión de Pagos - Panel Corporativo</h1>
@@ -71,30 +65,55 @@
 
     <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
 
-      <!-- SECCIÓN EXCLUSIVA ADMINISTRADOR -->
-      <div id="admin-panel" class="hidden space-y-6">
-        
-        <!-- Tarjetas de Comportamiento / KPIs -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-600">
-            <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Total Cobrado</p>
-            <p id="kpi-total-monto" class="text-2xl font-extrabold text-stone-800 mt-1">$0.00</p>
+      <!-- TARJETAS DE SEGUIMIENTO (VISIBLES PARA ASESORES Y ADMIN) -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-600">
+          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Total Cobrado</p>
+          <p id="kpi-total-monto" class="text-2xl font-extrabold text-stone-800 mt-1">$0.00</p>
+        </div>
+        <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-emerald-600">
+          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Pagos Confirmados (Sí)</p>
+          <p id="kpi-total-si" class="text-2xl font-extrabold text-emerald-700 mt-1">0</p>
+        </div>
+        <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-rose-600">
+          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Pagos Pendientes (No)</p>
+          <p id="kpi-total-no" class="text-2xl font-extrabold text-rose-700 mt-1">0</p>
+        </div>
+        <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-800" id="kpi-card-extra">
+          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider" id="kpi-title-extra">Mis Registros</p>
+          <p id="kpi-total-extra" class="text-2xl font-extrabold text-amber-900 mt-1">0</p>
+        </div>
+      </div>
+
+      <!-- TARJETAS DE CONTADORES POR CATEGORÍA DE VENTA -->
+      <div class="bg-white/95 backdrop-blur p-6 rounded-2xl shadow-lg border border-amber-200">
+        <h3 class="text-sm font-bold text-amber-900 uppercase tracking-wide mb-3">Seguimiento por Categoría de Venta</h3>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+          <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
+            <p class="text-[10px] text-stone-500 font-bold uppercase">BDD Abierta</p>
+            <p id="cat-bdd-abierta" class="text-lg font-extrabold text-amber-900">0</p>
           </div>
-          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-emerald-600">
-            <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Pagos Confirmados (Sí)</p>
-            <p id="kpi-total-si" class="text-2xl font-extrabold text-emerald-700 mt-1">0</p>
+          <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
+            <p class="text-[10px] text-stone-500 font-bold uppercase">BDD General</p>
+            <p id="cat-bdd-general" class="text-lg font-extrabold text-amber-900">0</p>
           </div>
-          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-rose-600">
-            <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Pagos Pendientes (No)</p>
-            <p id="kpi-total-no" class="text-2xl font-extrabold text-rose-700 mt-1">0</p>
+          <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
+            <p class="text-[10px] text-stone-500 font-bold uppercase">Blaster</p>
+            <p id="cat-blaster" class="text-lg font-extrabold text-amber-900">0</p>
           </div>
-          <div class="bg-white/95 backdrop-blur p-5 rounded-xl shadow-md border-l-4 border-amber-800">
-            <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Asesores Activos</p>
-            <p id="kpi-total-asesores" class="text-2xl font-extrabold text-amber-900 mt-1">0</p>
+          <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
+            <p class="text-[10px] text-stone-500 font-bold uppercase">Recaptado BANFANB</p>
+            <p id="cat-banfanb" class="text-lg font-extrabold text-amber-900">0</p>
+          </div>
+          <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 col-span-2 md:col-span-1">
+            <p class="text-[10px] text-stone-500 font-bold uppercase">Marketing</p>
+            <p id="cat-marketing" class="text-lg font-extrabold text-amber-900">0</p>
           </div>
         </div>
+      </div>
 
-        <!-- Gestión de Perfiles -->
+      <!-- SECCIÓN EXCLUSIVA ADMINISTRADOR -->
+      <div id="admin-panel" class="hidden space-y-6">
         <div class="bg-white/95 backdrop-blur p-6 rounded-2xl shadow-lg border border-amber-200 space-y-4">
           <h2 class="text-base font-bold text-amber-900 uppercase tracking-wide">Gestión de Perfiles y Claves de Asesores</h2>
           
@@ -129,12 +148,13 @@
             <table class="w-full text-sm text-left text-stone-700">
               <thead class="text-xs uppercase bg-amber-100/90 text-amber-900 font-bold">
                 <tr>
-                  <th class="py-3 px-4">Nombre</th>
-                  <th class="py-3 px-4">Rol</th>
-                  <th class="py-3 px-4">Clave</th>
-                  <th class="py-3 px-4">Total Registros</th>
-                  <th class="py-3 px-4">Monto Generado</th>
-                  <th class="py-3 px-4">Acciones</th>
+                  <th class="py-3 px-3">Nombre</th>
+                  <th class="py-3 px-3">Rol</th>
+                  <th class="py-3 px-3">Clave</th>
+                  <th class="py-3 px-3">Registros</th>
+                  <th class="py-3 px-3">Monto ($)</th>
+                  <th class="py-3 px-3">Cat. Destacada</th>
+                  <th class="py-3 px-3">Acciones</th>
                 </tr>
               </thead>
               <tbody id="users-tbody" class="divide-y divide-amber-100 bg-white/80">
@@ -177,12 +197,30 @@
             <input type="number" step="0.01" id="pago-monto" placeholder="0.00" class="w-full p-2.5 bg-amber-50/40 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" required />
           </div>
           <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1">Categoría de Venta</label>
+            <select id="pago-categoria" class="w-full p-2.5 bg-amber-50/40 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
+              <option value="BDD Abierta">BDD Abierta</option>
+              <option value="BDD General">BDD General</option>
+              <option value="Blaster">Blaster</option>
+              <option value="Cliente Recaptado BANFANB">Cliente Recaptado BANFANB</option>
+              <option value="Marketing">Marketing</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1">Banco</label>
+            <select id="pago-banco" class="w-full p-2.5 bg-amber-50/40 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
+              <option value="Banco Plaza">Banco Plaza</option>
+              <option value="Banesco">Banesco</option>
+              <option value="BANFANB">BANFANB</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
             <label class="block text-xs font-bold text-stone-600 mb-1">Estatus (Cuota)</label>
             <select id="pago-status" class="w-full p-2.5 bg-amber-50/40 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
               <!-- 12 Cuotas -->
             </select>
           </div>
-          <div class="flex items-end">
+          <div class="flex items-end md:col-span-2">
             <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow">
               Guardar Pago
             </button>
@@ -205,15 +243,17 @@
           <table class="w-full text-sm text-left text-stone-700">
             <thead class="text-xs uppercase bg-amber-100/90 text-amber-900 font-bold">
               <tr>
-                <th class="py-3 px-4">Fecha</th>
-                <th class="py-3 px-4">Asesor</th>
-                <th class="py-3 px-4">Cliente</th>
-                <th class="py-3 px-4">Cédula</th>
-                <th class="py-3 px-4">Teléfono</th>
-                <th class="py-3 px-4">¿Pagó?</th>
-                <th class="py-3 px-4">Monto ($)</th>
-                <th class="py-3 px-4">Estatus</th>
-                <th class="py-3 px-4">Acción</th>
+                <th class="py-3 px-3">Fecha</th>
+                <th class="py-3 px-3">Asesor</th>
+                <th class="py-3 px-3">Cliente</th>
+                <th class="py-3 px-3">Cédula</th>
+                <th class="py-3 px-3">Teléfono</th>
+                <th class="py-3 px-3">¿Pagó?</th>
+                <th class="py-3 px-3">Monto</th>
+                <th class="py-3 px-3">Categoría</th>
+                <th class="py-3 px-3">Banco</th>
+                <th class="py-3 px-3">Estatus</th>
+                <th class="py-3 px-3">Acción</th>
               </tr>
             </thead>
             <tbody id="payments-tbody" class="divide-y divide-amber-100 bg-white/80">
@@ -347,7 +387,10 @@
       if (currentUser.role === 'admin') {
         document.getElementById("export-excel-btn").classList.remove("hidden");
         document.getElementById("admin-panel").classList.remove("hidden");
+        document.getElementById("kpi-title-extra").textContent = "Asesores Activos";
         renderUsuariosTable();
+      } else {
+        document.getElementById("kpi-title-extra").textContent = "Mis Registros";
       }
 
       escucharPagos();
@@ -374,20 +417,22 @@
           const tr = document.createElement("tr");
           tr.className = "border-b hover:bg-amber-50/50 transition";
           tr.innerHTML = `
-            <td class="py-3 px-4">${data.fecha || ''}</td>
-            <td class="py-3 px-4 font-semibold text-amber-900">${data.asesor || ''}</td>
-            <td class="py-3 px-4">${data.cliente || ''}</td>
-            <td class="py-3 px-4">${data.cedula || ''}</td>
-            <td class="py-3 px-4">${data.telefono || ''}</td>
-            <td class="py-3 px-4">
-              <span class="px-2.5 py-1 text-xs font-bold rounded-full ${data.pagoConfirmado === 'Sí' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+            <td class="py-3 px-3 text-xs">${data.fecha || ''}</td>
+            <td class="py-3 px-3 font-semibold text-amber-900 text-xs">${data.asesor || ''}</td>
+            <td class="py-3 px-3 text-xs">${data.cliente || ''}</td>
+            <td class="py-3 px-3 text-xs">${data.cedula || ''}</td>
+            <td class="py-3 px-3 text-xs">${data.telefono || ''}</td>
+            <td class="py-3 px-3 text-xs">
+              <span class="px-2 py-0.5 font-bold rounded-full ${data.pagoConfirmado === 'Sí' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
                 ${data.pagoConfirmado}
               </span>
             </td>
-            <td class="py-3 px-4 font-extrabold text-stone-900">$${parseFloat(data.monto || 0).toFixed(2)}</td>
-            <td class="py-3 px-4">${data.status || ''}</td>
-            <td class="py-3 px-4">
-              <button data-id="${data.id}" class="btn-delete-pago text-rose-600 hover:text-rose-800 text-xs font-bold">Eliminar</button>
+            <td class="py-3 px-3 font-extrabold text-stone-900 text-xs">$${parseFloat(data.monto || 0).toFixed(2)}</td>
+            <td class="py-3 px-3 text-xs"><span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-medium">${data.categoria || 'N/A'}</span></td>
+            <td class="py-3 px-3 text-xs"><span class="bg-stone-100 text-stone-800 px-2 py-0.5 rounded font-medium">${data.banco || 'N/A'}</span></td>
+            <td class="py-3 px-3 text-xs">${data.status || ''}</td>
+            <td class="py-3 px-3 text-xs">
+              <button data-id="${data.id}" class="btn-delete-pago text-rose-600 hover:text-rose-800 font-bold">Eliminar</button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -402,23 +447,40 @@
           });
         });
 
+        actualizarMetricas();
         if (currentUser.role === 'admin') {
-          actualizarMetricasAdmin();
           renderUsuariosTable();
         }
       });
     }
 
-    function actualizarMetricasAdmin() {
+    function actualizarMetricas() {
       const totalMonto = allRecords.reduce((sum, r) => sum + (parseFloat(r.monto) || 0), 0);
       const totalSi = allRecords.filter(r => r.pagoConfirmado === 'Sí').length;
       const totalNo = allRecords.filter(r => r.pagoConfirmado === 'No').length;
-      const asesoresActivos = allUsers.filter(u => u.role === 'asesor').length;
 
       document.getElementById("kpi-total-monto").textContent = `$${totalMonto.toFixed(2)}`;
       document.getElementById("kpi-total-si").textContent = totalSi;
       document.getElementById("kpi-total-no").textContent = totalNo;
-      document.getElementById("kpi-total-asesores").textContent = asesoresActivos;
+
+      if (currentUser.role === 'admin') {
+        document.getElementById("kpi-total-extra").textContent = allUsers.filter(u => u.role === 'asesor').length;
+      } else {
+        document.getElementById("kpi-total-extra").textContent = allRecords.length;
+      }
+
+      // Contadores por Categoría
+      const catAbierta = allRecords.filter(r => r.categoria === 'BDD Abierta').length;
+      const catGeneral = allRecords.filter(r => r.categoria === 'BDD General').length;
+      const catBlaster = allRecords.filter(r => r.categoria === 'Blaster').length;
+      const catBanfanb = allRecords.filter(r => r.categoria === 'Cliente Recaptado BANFANB').length;
+      const catMarketing = allRecords.filter(r => r.categoria === 'Marketing').length;
+
+      document.getElementById("cat-bdd-abierta").textContent = catAbierta;
+      document.getElementById("cat-bdd-general").textContent = catGeneral;
+      document.getElementById("cat-blaster").textContent = catBlaster;
+      document.getElementById("cat-banfanb").textContent = catBanfanb;
+      document.getElementById("cat-marketing").textContent = catMarketing;
     }
 
     function renderUsuariosTable() {
@@ -431,6 +493,13 @@
         const totalRegistros = pagosDelAsesor.length;
         const montoGenerado = pagosDelAsesor.reduce((sum, r) => sum + (parseFloat(r.monto) || 0), 0);
 
+        // Categoría más frecuente del asesor
+        const catCounts = {};
+        pagosDelAsesor.forEach(r => {
+          if(r.categoria) catCounts[r.categoria] = (catCounts[r.categoria] || 0) + 1;
+        });
+        let topCat = Object.keys(catCounts).reduce((a, b) => catCounts[a] > catCounts[b] ? a : b, 'Sin registros');
+
         const tr = document.createElement("tr");
         tr.className = "border-b hover:bg-amber-50/50 transition";
         tr.innerHTML = `
@@ -439,6 +508,7 @@
           <td class="py-2.5 px-3 font-mono text-xs">${user.pass}</td>
           <td class="py-2.5 px-3 font-bold">${totalRegistros}</td>
           <td class="py-2.5 px-3 font-bold text-emerald-700">$${montoGenerado.toFixed(2)}</td>
+          <td class="py-2.5 px-3 text-xs"><span class="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded">${topCat}</span></td>
           <td class="py-2.5 px-3 space-x-2">
             <button data-id="${user.id}" class="btn-edit-user text-amber-700 hover:text-amber-900 text-xs font-bold">Editar/Clave</button>
             <button data-id="${user.id}" class="btn-delete-user text-rose-600 hover:text-rose-800 text-xs font-bold">Eliminar</button>
@@ -507,6 +577,8 @@
         telefono: document.getElementById("pago-telefono").value,
         pagoConfirmado: document.getElementById("pago-confirmado").value,
         monto: parseFloat(document.getElementById("pago-monto").value),
+        categoria: document.getElementById("pago-categoria").value,
+        banco: document.getElementById("pago-banco").value,
         status: document.getElementById("pago-status").value,
         asesor: currentUser.role === 'admin' ? "Administrador" : currentUser.name,
         timestamp: new Date()
@@ -534,6 +606,8 @@
         "Teléfono": r.telefono,
         "¿Pagó?": r.pagoConfirmado,
         "Monto ($USD)": r.monto,
+        "Categoría de Venta": r.categoria,
+        "Banco": r.banco,
         "Estatus Cuota": r.status
       }));
 
